@@ -105,10 +105,32 @@ export default function AdminScreen() {
     }
   };
 
-  const handlePDF = (day: string) => {
+  const handlePDF = async (day: string) => {
+  try {
     const url = `https://api.muhdimas.my.id/api/export-excel/${day}`;
-    Linking.openURL(url).catch(err => console.error("Gagal buka URL", err));
-  };
+    
+    // Gunakan fetch untuk mengambil data blob
+    const response = await fetch(url);
+    const blob = await response.blob();
+    
+    // Buat URL sementara untuk file tersebut
+    const blobUrl = window.URL.createObjectURL(blob);
+    
+    // Buat elemen anchor tersembunyi untuk memicu download
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = `Laporan_Lembur_${day}.xlsx`; // Nama file
+    document.body.appendChild(link);
+    link.click();
+    
+    // Bersihkan kembali
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error("Download gagal:", error);
+    alert("Gagal mendownload file, coba buka di browser Chrome/Safari langsung.");
+  }
+};
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
