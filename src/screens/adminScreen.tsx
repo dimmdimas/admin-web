@@ -58,7 +58,7 @@ export default function AdminScreen() {
     if (nikArray.length === 0) return alert("Daftar NIK tidak valid");
 
     try {
-      const response = await fetch('http://localhost:3000/api/list-users', {
+      const response = await fetch('https://api.muhdimas.my.id/api/list-users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nils: nikArray }) // Pastikan nama key sesuai dengan backend kamu
@@ -82,7 +82,7 @@ export default function AdminScreen() {
   const fetchMonitoringData = async () => {
     try {
       // Hapus tambahan &semua=... di URL ini
-      const response = await fetch(`http://localhost:3000/api/monitoring/status?day=day1`);
+      const response = await fetch(`https://api.muhdimas.my.id/api/monitoring/status?day=day1`);
 
       if (response.ok) {
         const data = await response.json();
@@ -167,7 +167,7 @@ export default function AdminScreen() {
 
         // ---> LOGIKA BARU: Jika Toggle Nyala, langsung tembak API list-users <---
         if (isSemuaKaryawan) {
-          const listResponse = await fetch('http://localhost:3000/api/list-users', {
+          const listResponse = await fetch('https://api.muhdimas.my.id/api/list-users', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ isSemua: true })
