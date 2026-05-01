@@ -393,7 +393,7 @@ export default function AdminScreen() {
         <View style={{ gap: 10, marginTop: 10, flexDirection: 'row', flex: 1 }}>
           {dateDay1 && (
             <Button
-              title={`PDF ${dateDay1}`}
+              title={`EXCEL ${dateDay1}`}
               onPress={() => handlePDF('day1')}
               bgColor="#E8F5E9"
               textColor="#74E245"
@@ -403,7 +403,7 @@ export default function AdminScreen() {
 
           {dateDay2 && (
             <Button
-              title={`PDF ${dateDay2}`}
+              title={`EXCEL ${dateDay2}`}
               onPress={() => handlePDF('day2')}
               bgColor="#E8F5E9"
               textColor="#74E245"
