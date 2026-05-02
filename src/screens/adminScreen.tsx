@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Linking, Modal, Switch, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Modal, Switch, TouchableOpacity, TextInput } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import Input from '../components/input';
 import ToggleRow from '../components/ToggleRow';
 import Button from '../components/button';
@@ -43,6 +44,26 @@ export default function AdminScreen() {
     fetchInitialDates();
     fetchMonitoringData();
   }, []);
+
+  const handleCopyList = async () => {
+    if (listBelumAbsen.length === 0) {
+      alert("Daftar kosong, tidak ada yang bisa disalin.");
+      return;
+    }
+
+    const textToCopy = listBelumAbsen
+      .map(item => `- *${item.nik}* [${item.nama}]`)
+      .join('\n');
+
+    try {
+      // Gunakan setStringAsync untuk expo-clipboard
+      await Clipboard.setStringAsync(textToCopy);
+      alert("✅ Daftar berhasil disalin!\nSiap di-paste ke WhatsApp.");
+    } catch (error) {
+      alert("❌ Gagal menyalin teks.");
+      console.error(error);
+    }
+  };
 
   const handleUploadList = async () => {
     if (!nikBulk) return alert("Masukkan daftar NIK terlebih dahulu");
@@ -324,6 +345,7 @@ export default function AdminScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Daftar Belum Absen</Text>
+
             <ScrollView style={{ width: '100%', maxHeight: 300 }}>
               {listBelumAbsen.length === 0 ? (
                 <Text style={{ textAlign: 'center', marginTop: 20 }}>🎉 Semua sudah absen!</Text>
@@ -336,9 +358,24 @@ export default function AdminScreen() {
                 ))
               )}
             </ScrollView>
-            <TouchableOpacity style={styles.btnClose} onPress={() => setModalCekVisible(false)}>
-              <Text style={{ color: 'white', fontWeight: 'bold' }}>Tutup</Text>
-            </TouchableOpacity>
+
+            {/* Tombol Copy & Tutup Sejajar */}
+            <View style={styles.modalActionRow}>
+              <TouchableOpacity
+                style={[styles.btn, { backgroundColor: '#E3F2FD', flex: 1, marginRight: 10 }]}
+                onPress={handleCopyList}
+              >
+                <Text style={[styles.btnText, { color: '#1976D2' }]}>Copy List</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.btn, { backgroundColor: '#000', flex: 1 }]}
+                onPress={() => setModalCekVisible(false)}
+              >
+                <Text style={[styles.btnText, { color: '#FFF' }]}>Tutup</Text>
+              </TouchableOpacity>
+            </View>
+
           </View>
         </View>
       </Modal>
