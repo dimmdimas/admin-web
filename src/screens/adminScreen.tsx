@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Modal, Switch, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Modal, Switch, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import Input from '../components/input';
 import ToggleRow from '../components/ToggleRow';
@@ -32,6 +32,8 @@ export default function AdminScreen() {
   // (Gunakan modal input dari logika multi-line sebelumnya)
   const [modalInputVisible, setModalInputVisible] = useState(false);
   const [nikBulk, setNikBulk] = useState('');
+
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     if (isDaySama) {
@@ -219,28 +221,38 @@ export default function AdminScreen() {
 
   const handlePDF = async (day: string) => {
     try {
+      setIsDownloading(true);
       const url = `https://api.muhdimas.my.id/api/export-excel/${day}`;
 
-      // Gunakan fetch untuk mengambil data blob
       const response = await fetch(url);
-      const blob = await response.blob();
 
-      // Buat URL sementara untuk file tersebut
+      // --- TAMBAHAN: Ekstrak Nama File dari Backend ---
+      let namaFile = `Laporan_Lembur_${day}.xlsx`; // Default jika gagal baca
+      const disposition = response.headers.get('Content-Disposition');
+
+      if (disposition && disposition.includes('filename=')) {
+        // Ambil teks setelah kata 'filename=' dan bersihkan tanda kutip/titik koma
+        const extract = disposition.split('filename=')[1];
+        namaFile = extract.replace(/['";]/g, '').trim();
+      }
+      // -----------------------------------------------
+
+      const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
 
-      // Buat elemen anchor tersembunyi untuk memicu download
       const link = document.createElement('a');
       link.href = blobUrl;
-      link.download = `Laporan_Lembur_${day}.xlsx`; // Nama file
+      link.download = namaFile; // <-- Gunakan nama file yang berisi tanggal
       document.body.appendChild(link);
       link.click();
 
-      // Bersihkan kembali
       document.body.removeChild(link);
       window.URL.revokeObjectURL(blobUrl);
     } catch (error) {
       console.error("Download gagal:", error);
       alert("Gagal mendownload file, coba buka di browser Chrome/Safari langsung.");
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -449,6 +461,16 @@ export default function AdminScreen() {
           )}
         </View>
       </View>
+      {/* MODAL LOADING DOWNLOAD EXCEL */}
+      <Modal visible={isDownloading} transparent={true} animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.loadingBox}>
+            <ActivityIndicator size="large" color="#1976D2" />
+            <Text style={styles.loadingText}>Menyiapkan Excel...</Text>
+            <Text style={styles.loadingSubText}>Harap tunggu sebentar</Text>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -537,4 +559,27 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: 20,
   },
+  loadingBox: {
+    backgroundColor: '#FFFFFF',
+    padding: 25,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5,           // Bayangan untuk Android
+    shadowColor: '#000',    // Bayangan untuk iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  loadingText: {
+    marginTop: 15,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  loadingSubText: {
+    marginTop: 5,
+    fontSize: 13,
+    color: '#666',
+  }
 });
