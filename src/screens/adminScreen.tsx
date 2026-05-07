@@ -222,7 +222,14 @@ export default function AdminScreen() {
   const handlePDF = async (day: string) => {
     try {
       setIsDownloading(true);
-      const url = `https://api.muhdimas.my.id/api/export-excel/${day}`;
+
+      // Masukkan NIK ketiga atasan di sini 
+        const nikOSH = "10038106";
+        const nikManager = "11";
+        const nikHRD = "22";
+
+        
+      const url = `https://api.muhdimas.my.id/api/export-excel/${day}?nikOSH=${nikOSH}&nikManager=${nikManager}&nikHRD=${nikHRD}`;
 
       const response = await fetch(url);
 
