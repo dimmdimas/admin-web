@@ -30,6 +30,9 @@
       "backgroundColor": "#FFFFFF",
       "display": "standalone",
       "orientation": "portrait"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

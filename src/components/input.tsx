@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput, StyleSheet, TextInputProps, Text, View, Dimensions } from 'react-native';
+import { TextInput, StyleSheet, TextInputProps, Text, View } from 'react-native';
 
 interface InputProps extends TextInputProps {
   label: string;
@@ -7,6 +7,7 @@ interface InputProps extends TextInputProps {
 }
 
 const Input = ({ label, style, editable = true, isDate, ...props }: InputProps) => {
+  // Fungsi format tanggal Indonesia
   const formatIndoDate = (dateString: string) => {
     if (!dateString) return "";
     try {
@@ -16,7 +17,28 @@ const Input = ({ label, style, editable = true, isDate, ...props }: InputProps) 
         month: 'long',
         year: 'numeric'
       }).format(date);
-    } catch (e) { return ""; }
+    } catch (e) { 
+      return ""; 
+    }
+  };
+
+  // Memisahkan style khusus Web Date Input agar JSX tidak berantakan
+  const webDateInputStyle = {
+    backgroundColor: '#F5F5F5',
+    borderRadius: '8px',
+    padding: '12px 15px',
+    fontSize: '16px',
+    border: '1px solid #E8E8E8',
+    width: '100%', 
+    maxWidth: '100%',
+    boxSizing: 'border-box' as const, 
+    display: 'block',
+    color: '#333',
+    outline: 'none',
+    fontFamily: 'Montserrat-Regular, sans-serif',
+    height: '48px',
+    appearance: 'none' as const,
+    WebkitAppearance: 'none' as const
   };
 
   return (
@@ -28,25 +50,7 @@ const Input = ({ label, style, editable = true, isDate, ...props }: InputProps) 
           type="date"
           value={props.value}
           onChange={(e) => props.onChangeText && props.onChangeText(e.target.value)}
-          style={{
-            backgroundColor: '#F5F5F5',
-            borderRadius: '8px',
-            padding: '12px 15px',
-            fontSize: '16px',
-            border: '1px solid #E8E8E8',
-            // --- FIX LEBAR MENYAMPING ---
-            width: '100%', 
-            maxWidth: '100%',
-            boxSizing: 'border-box', // Wajib: agar padding tidak menambah lebar luar
-            display: 'block',
-            // ---------------------------
-            color: '#333',
-            outline: 'none',
-            fontFamily: 'inherit',
-            height: '48px',
-            appearance: 'none', // Menghilangkan style default browser
-            WebkitAppearance: 'none'
-          }}
+          style={webDateInputStyle as any} 
         />
       ) : (
         <TextInput 
@@ -75,9 +79,14 @@ const styles = StyleSheet.create({
   container: { 
     marginBottom: 15,
     width: '100%',
-    alignSelf: 'stretch', // Memastikan View mengambil ruang yang tersedia
+    alignSelf: 'stretch',
   },
-  label: { fontSize: 14, color: '#333', marginBottom: 8, fontWeight: 'bold' },
+  label: { 
+    fontSize: 14, 
+    color: '#333', 
+    marginBottom: 8, 
+    fontFamily: 'Montserrat-Regular', // Menggunakan font tebal untuk label
+  },
   input: {
     backgroundColor: '#F5F5F5',
     borderRadius: 8,
@@ -87,6 +96,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E8E8E8',
     width: '100%',
+    fontFamily: 'Montserrat-Regular', // Menggunakan font regular untuk input
   },
   inputDisabled: {
     backgroundColor: '#E0E0E0',
@@ -96,6 +106,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#007AFF',
     marginTop: 6,
-    fontWeight: '600'
+    fontFamily: 'Montserrat-SemiBold', // Menggunakan font SemiBold untuk petunjuk teks
   }
 });

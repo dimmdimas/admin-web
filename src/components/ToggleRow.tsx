@@ -26,7 +26,18 @@ const ToggleRow = ({ label, value, onValueChange, disabled = false }: ToggleRowP
 export default ToggleRow;
 
 const styles = StyleSheet.create({
-  container: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
-  label: { fontSize: 14, color: '#333', marginLeft: 10 },
-  labelDisabled: { color: '#888' }
+  container: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginBottom: 15 
+  },
+  label: { 
+    fontSize: 14, 
+    color: '#333', 
+    marginLeft: 10,
+    fontFamily: 'Montserrat-Light'
+  },
+  labelDisabled: { 
+    color: '#888' 
+  }
 });
