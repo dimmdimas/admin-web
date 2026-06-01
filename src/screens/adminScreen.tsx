@@ -69,13 +69,17 @@ export default function AdminScreen() {
 
       {/* --- FORM SECTION --- */}
       <FormLemburSection
-        upahDay1={lembur.upahDay1} setUpahDay1={lembur.setUpahDay1}
         isDaySama={lembur.isDaySama} setIsDaySama={lembur.setIsDaySama}
+        
+        upahDay1={lembur.upahDay1} setUpahDay1={lembur.setUpahDay1}
         tanggalDay1={lembur.tanggalDay1} setTanggalDay1={lembur.setTanggalDay1}
         is16Day1={lembur.is16Day1} setIs16Day1={lembur.setIs16Day1}
+        is12Day1={lembur.is12Day1} setIs12Day1={lembur.setIs12Day1}
+        
         upahDay2={lembur.upahDay2} setUpahDay2={lembur.setUpahDay2}
         tanggalDay2={lembur.tanggalDay2} setTanggalDay2={lembur.setTanggalDay2}
         is16Day2={lembur.is16Day2} setIs16Day2={lembur.setIs16Day2}
+        is12Day2={lembur.is12Day2} setIs12Day2={lembur.setIs12Day2}
       />
 
       {/* --- BOTTOM SECTION --- */}

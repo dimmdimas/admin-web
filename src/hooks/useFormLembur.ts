@@ -6,9 +6,11 @@ export const useFormLembur = (fetchMonitoringData: () => void, isSemuaKaryawan: 
   const [isDaySama, setIsDaySama] = useState(false);
   const [tanggalDay1, setTanggalDay1] = useState('');
   const [is16Day1, setIs16Day1] = useState(true);
+  const [is12Day1, setIs12Day1] = useState(false);
   const [upahDay2, setUpahDay2] = useState('');
   const [tanggalDay2, setTanggalDay2] = useState('');
   const [is16Day2, setIs16Day2] = useState(true);
+  const [is12Day2, setIs12Day2] = useState(false);
   const [dateDay1, setDateDay1] = useState<string | null>(null);
   const [dateDay2, setDateDay2] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -27,8 +29,19 @@ export const useFormLembur = (fetchMonitoringData: () => void, isSemuaKaryawan: 
   const handleSubmit = async () => {
     if (!upahDay1 || !tanggalDay1) return alert("Mohon isi Day 1");
     try {
-      const antrean = [{ url: API_ENDPOINTS.day1, payload: { tanggal: tanggalDay1, money: upahDay1, jam16: is16Day1 } }];
-      if (tanggalDay2) antrean.push({ url: API_ENDPOINTS.day2, payload: { tanggal: tanggalDay2, money: isDaySama ? upahDay1 : upahDay2, jam16: is16Day2 } });
+      // --- PERBAIKAN: Tambahkan jam12: is12Day1 ke dalam payload ---
+      const antrean = [{ 
+        url: API_ENDPOINTS.day1, 
+        payload: { tanggal: tanggalDay1, money: upahDay1, jam16: is16Day1, jam12: is12Day1 } 
+      }];
+      
+      // --- PERBAIKAN: Tambahkan jam12: is12Day2 ke dalam payload ---
+      if (tanggalDay2) {
+        antrean.push({ 
+          url: API_ENDPOINTS.day2, 
+          payload: { tanggal: tanggalDay2, money: isDaySama ? upahDay1 : upahDay2, jam16: is16Day2, jam12: is12Day2 } 
+        });
+      }
 
       const responses = await Promise.all(antrean.map(item => fetch(item.url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(item.payload) })));
       
@@ -43,7 +56,7 @@ export const useFormLembur = (fetchMonitoringData: () => void, isSemuaKaryawan: 
   const handleExcel = async (day: string) => {
     try {
       setIsDownloading(true);
-      const url = API_ENDPOINTS.exportExcel(day, "10038106", "11", "22");
+      const url = API_ENDPOINTS.exportExcel(day, "10038106", "10000224", "10003315");
       const response = await fetch(url);
       const disposition = response.headers.get('Content-Disposition');
       let namaFile = disposition && disposition.includes('filename=') ? disposition.split('filename=')[1].replace(/['";]/g, '').trim() : `Laporan_${day}.xlsx`;
@@ -57,7 +70,10 @@ export const useFormLembur = (fetchMonitoringData: () => void, isSemuaKaryawan: 
 
   return {
     upahDay1, setUpahDay1, isDaySama, setIsDaySama, tanggalDay1, setTanggalDay1, is16Day1, setIs16Day1,
-    upahDay2, setUpahDay2, tanggalDay2, setTanggalDay2, is16Day2, setIs16Day2, dateDay1, dateDay2, isDownloading,
+    is12Day1, setIs12Day1, // <--- PERBAIKAN: Ditambahkan di sini
+    upahDay2, setUpahDay2, tanggalDay2, setTanggalDay2, is16Day2, setIs16Day2, 
+    is12Day2, setIs12Day2, // <--- PERBAIKAN: Ditambahkan di sini
+    dateDay1, dateDay2, isDownloading,
     fetchInitialDates, handleSubmit, handleExcel
   };
 };

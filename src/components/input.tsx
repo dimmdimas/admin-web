@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput, StyleSheet, TextInputProps, Text, View } from 'react-native';
+import { TextInput, StyleSheet, TextInputProps, Text, View, Platform } from 'react-native';
 
 interface InputProps extends TextInputProps {
   label: string;
@@ -45,7 +45,8 @@ const Input = ({ label, style, editable = true, isDate, ...props }: InputProps) 
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       
-      {isDate ? (
+      {/* KUNCI PERBAIKANNYA ADA DI SINI */}
+      {isDate && Platform.OS === 'web' ? (
         <input
           type="date"
           value={props.value}
@@ -60,6 +61,7 @@ const Input = ({ label, style, editable = true, isDate, ...props }: InputProps) 
             style
           ]} 
           editable={editable}
+          placeholder={isDate ? "YYYY-MM-DD" : props.placeholder} // Tambahan UX jika di mobile
           {...props} 
         />
       )}
@@ -85,7 +87,7 @@ const styles = StyleSheet.create({
     fontSize: 14, 
     color: '#333', 
     marginBottom: 8, 
-    fontFamily: 'Montserrat-Regular', // Menggunakan font tebal untuk label
+    fontFamily: 'Montserrat-Regular', 
   },
   input: {
     backgroundColor: '#F5F5F5',
@@ -96,7 +98,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E8E8E8',
     width: '100%',
-    fontFamily: 'Montserrat-Regular', // Menggunakan font regular untuk input
+    fontFamily: 'Montserrat-Regular',
   },
   inputDisabled: {
     backgroundColor: '#E0E0E0',
@@ -106,6 +108,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#007AFF',
     marginTop: 6,
-    fontFamily: 'Montserrat-SemiBold', // Menggunakan font SemiBold untuk petunjuk teks
+    fontFamily: 'Montserrat-SemiBold',
   }
 });

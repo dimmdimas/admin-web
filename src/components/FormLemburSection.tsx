@@ -15,12 +15,20 @@ interface FormLemburSectionProps {
   is16Day1: boolean;
   setIs16Day1: (value: boolean) => void;
   
+  // --- BARU: Props untuk Jam 12 Day 1 ---
+  is12Day1: boolean;
+  setIs12Day1: (value: boolean) => void;
+  
   upahDay2: string;
   setUpahDay2: (value: string) => void;
   tanggalDay2: string;
   setTanggalDay2: (value: string) => void;
   is16Day2: boolean;
   setIs16Day2: (value: boolean) => void;
+  
+  // --- BARU: Props untuk Jam 12 Day 2 ---
+  is12Day2: boolean;
+  setIs12Day2: (value: boolean) => void;
 }
 
 export default function FormLemburSection({
@@ -28,9 +36,11 @@ export default function FormLemburSection({
   isDaySama, setIsDaySama,
   tanggalDay1, setTanggalDay1,
   is16Day1, setIs16Day1,
+  is12Day1, setIs12Day1, // <-- BARU
   upahDay2, setUpahDay2,
   tanggalDay2, setTanggalDay2,
-  is16Day2, setIs16Day2
+  is16Day2, setIs16Day2,
+  is12Day2, setIs12Day2  // <-- BARU
 }: FormLemburSectionProps) {
 
   return (
@@ -64,6 +74,13 @@ export default function FormLemburSection({
         onValueChange={setIs16Day1} 
       />
 
+      {/* --- BARU: Toggle 12.00 untuk Day 1 --- */}
+      <ToggleRow 
+        label="12.00" 
+        value={is12Day1} 
+        onValueChange={setIs12Day1} 
+      />
+
       <Gap height={15}/>
 
       {/* PENGATURAN DAY 2 */}
@@ -86,6 +103,13 @@ export default function FormLemburSection({
         label="16.00" 
         value={is16Day2} 
         onValueChange={setIs16Day2} 
+      />
+
+      {/* --- BARU: Toggle 12.00 untuk Day 2 --- */}
+      <ToggleRow 
+        label="12.00" 
+        value={is12Day2} 
+        onValueChange={setIs12Day2} 
       />
     </View>
   );
