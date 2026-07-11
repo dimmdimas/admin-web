@@ -1,10 +1,9 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import Input from './input';           // Sesuaikan path jika letak komponen Input Anda berbeda
-import ToggleRow from './ToggleRow';   // Sesuaikan path jika letak komponen ToggleRow Anda berbeda
+import Input from './input';           
+import ToggleRow from './ToggleRow';   
 import Gap from './gap';
 
-// --- DEFINISI PROPS ---
 interface FormLemburSectionProps {
   upahDay1: string;
   setUpahDay1: (value: string) => void;
@@ -14,8 +13,6 @@ interface FormLemburSectionProps {
   setTanggalDay1: (value: string) => void;
   is16Day1: boolean;
   setIs16Day1: (value: boolean) => void;
-  
-  // --- BARU: Props untuk Jam 12 Day 1 ---
   is12Day1: boolean;
   setIs12Day1: (value: boolean) => void;
   
@@ -25,8 +22,6 @@ interface FormLemburSectionProps {
   setTanggalDay2: (value: string) => void;
   is16Day2: boolean;
   setIs16Day2: (value: boolean) => void;
-  
-  // --- BARU: Props untuk Jam 12 Day 2 ---
   is12Day2: boolean;
   setIs12Day2: (value: boolean) => void;
 }
@@ -36,12 +31,34 @@ export default function FormLemburSection({
   isDaySama, setIsDaySama,
   tanggalDay1, setTanggalDay1,
   is16Day1, setIs16Day1,
-  is12Day1, setIs12Day1, // <-- BARU
+  is12Day1, setIs12Day1, 
   upahDay2, setUpahDay2,
   tanggalDay2, setTanggalDay2,
   is16Day2, setIs16Day2,
-  is12Day2, setIs12Day2  // <-- BARU
+  is12Day2, setIs12Day2  
 }: FormLemburSectionProps) {
+
+  // --- LOGIKA BARU: Handler untuk Day 1 ---
+  const handleToggle16Day1 = (newValue: boolean) => {
+    setIs16Day1(newValue);
+    if (newValue) setIs12Day1(false); // Matikan jam 12 jika jam 16 nyala
+  };
+
+  const handleToggle12Day1 = (newValue: boolean) => {
+    setIs12Day1(newValue);
+    if (newValue) setIs16Day1(false); // Matikan jam 16 jika jam 12 nyala
+  };
+
+  // --- LOGIKA BARU: Handler untuk Day 2 ---
+  const handleToggle16Day2 = (newValue: boolean) => {
+    setIs16Day2(newValue);
+    if (newValue) setIs12Day2(false); 
+  };
+
+  const handleToggle12Day2 = (newValue: boolean) => {
+    setIs12Day2(newValue);
+    if (newValue) setIs16Day2(false); 
+  };
 
   return (
     <View style={styles.container}>
@@ -71,14 +88,13 @@ export default function FormLemburSection({
       <ToggleRow 
         label="16.00" 
         value={is16Day1} 
-        onValueChange={setIs16Day1} 
+        onValueChange={handleToggle16Day1} // <-- Gunakan handler baru
       />
 
-      {/* --- BARU: Toggle 12.00 untuk Day 1 --- */}
       <ToggleRow 
         label="12.00" 
         value={is12Day1} 
-        onValueChange={setIs12Day1} 
+        onValueChange={handleToggle12Day1} // <-- Gunakan handler baru
       />
 
       <Gap height={15}/>
@@ -102,14 +118,13 @@ export default function FormLemburSection({
       <ToggleRow 
         label="16.00" 
         value={is16Day2} 
-        onValueChange={setIs16Day2} 
+        onValueChange={handleToggle16Day2} // <-- Gunakan handler baru
       />
 
-      {/* --- BARU: Toggle 12.00 untuk Day 2 --- */}
       <ToggleRow 
         label="12.00" 
         value={is12Day2} 
-        onValueChange={setIs12Day2} 
+        onValueChange={handleToggle12Day2} // <-- Gunakan handler baru
       />
     </View>
   );
@@ -117,6 +132,6 @@ export default function FormLemburSection({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 20, // Memberikan jarak dengan tombol-tombol di bawahnya
+    marginBottom: 20,
   }
 });

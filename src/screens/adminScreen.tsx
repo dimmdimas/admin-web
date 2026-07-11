@@ -1,19 +1,15 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import Button from '../components/button';
-import { useFormLembur, useKelolaKaryawan, useMonitoring } from '../hooks';
-import { DownloadExcelSection, FormLemburSection, MonitorCard } from '../components';
-import { ModalCekBelumAbsen, ModalKelolaKaryawan, ModalLoadingExcel } from '../Modal';
-import Gap from '../components/gap';
-
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { Button, DownloadExcelSection, FormLemburSection, Gap, MonitorCard } from '../components';
+import { useFormLembur, useKelolaKaryawan, useMonitoring, useDownloadZip } from '../hooks';
+import { ModalCekBelumAbsen, ModalKelolaKaryawan, ModalLoadingExcel, ModalLoadingZip } from '../Modal';
 
 export default function AdminScreen() {
-  // Panggil fungsi spesifik dari masing-masing Hook
   const hr = useKelolaKaryawan();
   const monitor = useMonitoring();
   const lembur = useFormLembur(monitor.fetchMonitoringData, monitor.isSemuaKaryawan);
+  const { downloadZip, loadingDay1, loadingDay2 } = useDownloadZip();
 
-  // Trigger data awal saat aplikasi pertama kali dibuka
   useEffect(() => {
     lembur.fetchInitialDates();
     monitor.fetchMonitoringData();
@@ -23,23 +19,8 @@ export default function AdminScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <Text style={styles.title}>Hello 👋🏻, ADMIN</Text>
 
-      {/* --- KOTAK MONITORING --- */}
-      <MonitorCard
-        totalNik={monitor.totalNik}
-        belumAbsenCount={monitor.belumAbsenCount}
-        isSemuaKaryawan={monitor.isSemuaKaryawan}
-        setIsSemuaKaryawan={monitor.setIsSemuaKaryawan}
-        modalInputVisible={monitor.modalInputVisible}
-        setModalInputVisible={monitor.setModalInputVisible}
-        setModalCekVisible={monitor.setModalCekVisible}
-        nikBulk={monitor.nikBulk}
-        setNikBulk={monitor.setNikBulk}
-        handleUploadList={monitor.handleUploadList}
-      />
+      <MonitorCard {...monitor} />
 
-      
-
-      {/* --- MODAL CEK BELUM ABSEN --- */}
       <ModalCekBelumAbsen
         visible={monitor.modalCekVisible}
         onClose={() => monitor.setModalCekVisible(false)}
@@ -47,51 +28,43 @@ export default function AdminScreen() {
         onCopyList={monitor.handleCopyList}
       />
 
-      {/* --- TOMBOL & MODAL KELOLA KARYAWAN --- */}
-      <TouchableOpacity style={styles.btnMenu} onPress={hr.handleBukaKelolaUser}>
-        <Text style={styles.btnMenuText}>👥 Kelola Karyawan</Text>
-      </TouchableOpacity>
-      
+      <Button title="👥 Kelola Karyawan" onPress={hr.handleBukaKelolaUser} bgColor="#22577A" textColor="white" />
+
       <ModalKelolaKaryawan
         visible={hr.modalUserVisible}
         onClose={() => hr.setModalUserVisible(false)}
-        formUser={hr.formUser}
-        setFormUser={hr.setFormUser}
-        isUserLoading={hr.isUserLoading}
-        onTambahUser={hr.handleTambahUser}
-        searchQuery={hr.searchQuery}
-        setSearchQuery={hr.setSearchQuery}
-        filteredUsers={hr.filteredUsers}
-        onHapusUser={hr.handleHapusUser}
+        {...hr} // Tetap gunakan ini untuk yang cocok
+        onTambahUser={hr.handleTambahUser} // Pastikan namanya benar
+        onHapusUser={hr.handleHapusUser}   // Pastikan namanya benar
       />
+      <FormLemburSection {...lembur} />
 
-      <Gap height={10}/>
-
-      {/* --- FORM SECTION --- */}
-      <FormLemburSection
-        isDaySama={lembur.isDaySama} setIsDaySama={lembur.setIsDaySama}
-        
-        upahDay1={lembur.upahDay1} setUpahDay1={lembur.setUpahDay1}
-        tanggalDay1={lembur.tanggalDay1} setTanggalDay1={lembur.setTanggalDay1}
-        is16Day1={lembur.is16Day1} setIs16Day1={lembur.setIs16Day1}
-        is12Day1={lembur.is12Day1} setIs12Day1={lembur.setIs12Day1}
-        
-        upahDay2={lembur.upahDay2} setUpahDay2={lembur.setUpahDay2}
-        tanggalDay2={lembur.tanggalDay2} setTanggalDay2={lembur.setTanggalDay2}
-        is16Day2={lembur.is16Day2} setIs16Day2={lembur.setIs16Day2}
-        is12Day2={lembur.is12Day2} setIs12Day2={lembur.setIs12Day2}
-      />
-
-      {/* --- BOTTOM SECTION --- */}
       <View style={styles.bottomContainer}>
         <Button title="Submit" onPress={lembur.handleSubmit} bgColor="#FFF9C4" textColor="#b09836" />
         <DownloadExcelSection dateDay1={lembur.dateDay1} dateDay2={lembur.dateDay2} onDownload={lembur.handleExcel} />
+
+        <Gap height={20} />
+
+        <ZipDownloadButton day="day1" loading={loadingDay1} onPress={() => downloadZip('day1')} />
+        <ZipDownloadButton day="day2" loading={loadingDay2} onPress={() => downloadZip('day2')} />
       </View>
 
+      <ModalLoadingZip visible={loadingDay1 || loadingDay2} />
       <ModalLoadingExcel visible={lembur.isDownloading} />
     </ScrollView>
   );
 }
+
+// Sub-komponen kecil untuk tombol agar AdminScreen tidak panjang
+const ZipDownloadButton = ({ day, loading, onPress }: any) => (
+  <Button
+    title={loading ? `Menyiapkan ${day}...` : `📦 Download Lampiran (${day.toUpperCase()})`}
+    onPress={onPress}
+    bgColor={loading ? "#CFD8DC" : "#E0F7FA"}
+    textColor="#006064"
+    // disabled={loading}
+  />
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -125,5 +98,18 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  loadingZipContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 15,
+    backgroundColor: '#E0F7FA',
+    borderRadius: 8,
+  },
+  textLoadingZip: {
+    marginLeft: 10,
+    color: '#006064',
+    fontWeight: 'bold',
   }
 });
