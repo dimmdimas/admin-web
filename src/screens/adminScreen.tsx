@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Button, DownloadExcelSection, FormLemburSection, Gap, MonitorCard } from '../components';
-import { useFormLembur, useKelolaKaryawan, useMonitoring, useDownloadZip } from '../hooks';
+import { useDownloadExcel, useFormLembur, useKelolaKaryawan, useMonitoring,  } from '../hooks';
 import { ModalCekBelumAbsen, ModalKelolaKaryawan, ModalLoadingExcel, ModalLoadingZip } from '../Modal';
 
 export default function AdminScreen() {
   const hr = useKelolaKaryawan();
   const monitor = useMonitoring();
   const lembur = useFormLembur(monitor.fetchMonitoringData, monitor.isSemuaKaryawan);
-  const { downloadZip, loadingDay1, loadingDay2 } = useDownloadZip();
+  const { downloadExcel, loadingDay1, loadingDay2 } = useDownloadExcel();
 
   useEffect(() => {
     lembur.fetchInitialDates();
@@ -45,8 +45,8 @@ export default function AdminScreen() {
 
         <Gap height={20} />
 
-        <ZipDownloadButton day="day1" loading={loadingDay1} onPress={() => downloadZip('day1')} />
-        <ZipDownloadButton day="day2" loading={loadingDay2} onPress={() => downloadZip('day2')} />
+        <ExcelDownloadButton day="day1" loading={loadingDay1} onPress={() => downloadExcel('day1')} />
+        <ExcelDownloadButton day="day2" loading={loadingDay2} onPress={() => downloadExcel('day2')} />
       </View>
 
       <ModalLoadingZip visible={loadingDay1 || loadingDay2} />
@@ -56,7 +56,7 @@ export default function AdminScreen() {
 }
 
 // Sub-komponen kecil untuk tombol agar AdminScreen tidak panjang
-const ZipDownloadButton = ({ day, loading, onPress }: any) => (
+const ExcelDownloadButton = ({ day, loading, onPress }: any) => (
   <Button
     title={loading ? `Menyiapkan ${day}...` : `📦 Download Lampiran (${day.toUpperCase()})`}
     onPress={onPress}
